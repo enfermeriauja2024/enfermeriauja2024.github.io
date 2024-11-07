@@ -92,11 +92,13 @@ h1 {
       <p class="description">Primera promoción de Escuela de enfermería promoción no oficial (1954) y alumnado del Grado de enfermeria (2024)</p>
       <div class="image-row">
           <div class="image-container">
-              <img src="fotos/1/a1.jpg" alt="Antes" class="img">
+              <!-- <img src="fotos/1/a1.jpg" alt="Antes" class="img"> -->
+              <canvas id="canvas1"></canvas>
               <p class="label">Antes</p>
           </div>
           <div class="image-container">
-              <img src="fotos/1/b1.jpg" alt="Después" class="img">
+              <!--   <img src="fotos/1/b1.jpg" alt="Después" class="img"> -->
+              <canvas id="canvas2"></canvas>
               <p class="label">Después</p>
           </div>
       </div>
@@ -191,10 +193,9 @@ h1 {
       </div>
   </div>
 </div>
- 
   
-  <!-- Vertex Shader -->
-  <script id="vs" type="x-shader/x-vertex">
+   <!-- Vertex Shader -->
+   <script id="vs" type="x-shader/x-vertex">
     attribute vec2 position;
     attribute vec2 texcoord;
 
@@ -227,17 +228,96 @@ h1 {
       vec4 original = texture2D(u_originalImage, v_texcoord + parallax);
       gl_FragColor = original;
     }
-  </script>
+    </script>
 
   <!-- Incluye la librería TWGL -->
   <script src="https://twgljs.org/dist/4.x/twgl-full.min.js"></script>
 
+
   <!-- Script Principal -->
   <script>
     "use strict";
- 
 
-     
+    function setupCanvas(canvasId, imageUrl, mapUrl) {
+      const canvas = document.getElementById(canvasId);
+      const gl = canvas.getContext("webgl");
+      if (!gl) {
+        console.error("No se pudo obtener el contexto WebGL.");
+        return;
+      }
+
+      let originalImage = { width: 1, height: 1 };
+      const originalTexture = twgl.createTexture(gl, {
+        src: imageUrl,
+        crossOrigin: "",
+      }, (err, texture, source) => {
+        if (err) {
+          console.error("Error al cargar la textura de la imagen original.");
+          return;
+        }
+        originalImage = source;
+      });
+
+      const mapTexture = twgl.createTexture(gl, {
+        src: mapUrl,
+        crossOrigin: "",
+      });
+
+      const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+      const bufferInfo = twgl.primitives.createXYQuadBufferInfo(gl);
+
+      const mouse = [0, 0];
+      document.addEventListener("mousemove", (event) => {
+        mouse[0] = (event.clientX / gl.canvas.clientWidth  * 2 - 1) * -0.02;
+        mouse[1] = (event.clientY / gl.canvas.clientHeight * 2 - 1) * -0.02;
+      });
+
+      document.addEventListener("touchmove", (event) => {
+        mouse[0] = (event.touches[0].clientX / gl.canvas.clientWidth  * 2 - 1) * -0.02;
+        mouse[1] = (event.touches[0].clientY / gl.canvas.clientHeight * 2 - 1) * -0.02;
+      });
+
+      const nMouse = [0, 0];
+      requestAnimationFrame(render);
+
+      function render() {
+        twgl.resizeCanvasToDisplaySize(gl.canvas);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.useProgram(programInfo.program);
+        twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+
+        const canvasAspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const imageAspect = originalImage.width / originalImage.height;
+
+        const mat = [
+          imageAspect / canvasAspect, 0, 0,
+          0, -1, 0,
+          0, 0, 1
+        ];
+
+        nMouse[0] += (mouse[0] - nMouse[0]) * 0.02;
+        nMouse[1] += (mouse[1] - nMouse[1]) * 0.02;
+
+        twgl.setUniforms(programInfo, {
+          u_matrix: mat,
+          u_originalImage: originalTexture,
+          u_mapImage: mapTexture,
+          u_mouse: nMouse,
+        });
+
+        twgl.drawBufferInfo(gl, bufferInfo);
+        requestAnimationFrame(render);
+      }
+    }
+
+    // Llama a setupCanvas para ambos canvas con sus URLs correspondientes
+    setupCanvas("canvas1", "https://enfermeriauja2024.github.io/enfermeria1/fotos/1/a1.jpg", "https://enfermeriauja2024.github.io/enfermeria1/fotos/1/a1-d.png");
+    setupCanvas("canvas2", "https://enfermeriauja2024.github.io/enfermeria1/fotos/1/b1.jpg", "https://enfermeriauja2024.github.io/enfermeria1/fotos/1/b1-d.png");
   </script>
+
 </body>
 </html>
