@@ -320,8 +320,8 @@
           0, 0, 1
         ];
 
-        nMouse[0] += (mouse[0] - nMouse[0]) * 0.03;
-        nMouse[1] += (mouse[1] - nMouse[1]) * 0.03;
+        nMouse[0] += (mouse[0] - nMouse[0]) * 0.01;
+        nMouse[1] += (mouse[1] - nMouse[1]) * 0.01;
 
         twgl.setUniforms(programInfo, {
           u_matrix: mat,
