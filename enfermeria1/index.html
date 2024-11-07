@@ -117,37 +117,7 @@
        box-shadow: 0 3px 6px rgba(0, 68, 148, 0.2);
    }
    
-   /* Media Query para dispositivos móviles */
-   @media (max-width: 600px) {
-       .image-row {
-           flex-direction: column;
-       }
-       .image-container {
-           width: 100%; 
-           max-width: 600px;
-       }
-        
-   canvas {
-         width: 100%;
-         height: 90%;
-         cursor: pointer;
-       } 
-       
-       #exit-fullscreen {
-         position: fixed;
-         top: 10px;
-         left: 10px;
-         padding: 10px 15px;
-         font-size: 1em;
-         color: white;
-         background-color: rgba(0, 0, 0, 0.8);
-         border: none;
-         border-radius: 5px;
-         cursor: pointer;
-         z-index: 1000;
-       }
-   
-   }
+    
    
      </style>
 </head>
@@ -350,8 +320,8 @@
           0, 0, 1
         ];
 
-        nMouse[0] += (mouse[0] - nMouse[0]) * 0.05;
-        nMouse[1] += (mouse[1] - nMouse[1]) * 0.05;
+        nMouse[0] += (mouse[0] - nMouse[0]) * 0.03;
+        nMouse[1] += (mouse[1] - nMouse[1]) * 0.03;
 
         twgl.setUniforms(programInfo, {
           u_matrix: mat,
