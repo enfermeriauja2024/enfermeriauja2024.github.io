@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enfermería UJAEN</title>
+  <style>
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+ 
+canvas {
+      width: 100%;
+      height: 90%;
+      cursor: pointer;
+    }
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.comparison-block {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+.description {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #555;
+}
+
+.image-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.image-container {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.img {
+    width: 100%;
+    height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.img:hover {
+    transform: scale(1.05);
+}
+
+.label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #666;
+}
+
+#exit-fullscreen {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      padding: 10px 15px;
+      font-size: 1em;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.8);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .modern-blue-button {
+    background-color: #007bff; /* Azul moderno */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.modern-blue-button:hover {
+    background-color: #0056b3; /* Azul oscuro para hover */
+    box-shadow: 0 6px 12px rgba(0, 86, 179, 0.3);
+    transform: translateY(-2px);
+}
+
+.modern-blue-button:active {
+    background-color: #004494; /* Azul más oscuro para clic */
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0, 68, 148, 0.2);
+}
+
+/* Media Query para dispositivos móviles */
+@media (max-width: 600px) {
+    .image-row {
+        flex-direction: column;
+    }
+    .image-container {
+        width: 100%; 
+        max-width: 600px;
+    }
+     
+canvas {
+      width: 100%;
+      height: 90%;
+      cursor: pointer;
+    } 
+    
+    #exit-fullscreen {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      padding: 10px 15px;
+      font-size: 1em;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.8);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+}
+
+  </style>
+</head>
+<body>
+  <h1>Comparación Antes y Después en Enfermería</h1>
+ 
+
+<div class="comparison-block">
+  <p class="description">Quirófano Hospital San Juan de Dios (Jaén) en 1950 y UCI en Hospital Universitario Ciudad de Jaén en 2024</p>
+  <div class="image-row">
+      <div class="image-container">
+        <!-- <img src="fotos/5/a1.jpg" alt="Antes" class="img">-->
+            <canvas id="canvas9"></canvas> 
+          <p class="label">Antes</p>
+      </div>
+      <div class="image-container">
+          <!-- <img src="fotos/5/b1.jpg" alt="Después" class="img">-->
+           <canvas id="canvas10"></canvas> 
+          <p class="label">Después</p>
+      </div>
+  </div>
+</div>
+
+  
+<hr style="border: none; border-top: 1px solid black; width: 80%; margin: 20px auto;">
+ 
+
+<div class="comparison-block">
+  <p class="description">Prácticas en Escuela de enfermería 1979 y prácticas universitarias con realidad virtual aplicada a los cuidados enfermeros 2024</p>
+  <div class="image-row">
+      <div class="image-container">
+           <!--<img src="fotos/6/a1.jpg" alt="Antes" class="img"> -->
+           <canvas id="canvas11"></canvas>
+          <p class="label">Antes</p>
+      </div>
+      <div class="image-container">
+         <!--<img src="fotos/6/b1.jpg" alt="Después" class="img">-->
+             <canvas id="canvas12"></canvas> 
+          <p class="label">Después</p>
+      </div>
+  </div>
+</div>
+
+<button class="modern-blue-button" onclick="goToPage()">Atrás</button>
+  
+   <!-- Vertex Shader -->
+   <script id="vs" type="x-shader/x-vertex">
+    attribute vec2 position;
+    attribute vec2 texcoord;
+
+    uniform mat3 u_matrix;
+
+    varying vec2 v_texcoord;
+
+    void main() {
+      gl_Position = vec4(u_matrix * vec3(position, 1), 1);
+      v_texcoord = texcoord;
+    }
+  </script>
+
+  <!-- Fragment Shader -->
+  <script id="fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    uniform vec2 u_mouse;
+    uniform sampler2D u_originalImage;
+    uniform sampler2D u_mapImage;
+
+    varying vec2 v_texcoord;
+
+    void main() {
+      vec4 depthDistortion = texture2D(u_mapImage, v_texcoord);
+      float parallaxMult = depthDistortion.r;
+
+      vec2 parallax = u_mouse * parallaxMult;
+
+      vec4 original = texture2D(u_originalImage, v_texcoord + parallax);
+      gl_FragColor = original;
+    }
+    </script>
+
+  <!-- Incluye la librería TWGL -->
+  <script src="https://twgljs.org/dist/4.x/twgl-full.min.js"></script>
+
+
+  <!-- Script Principal -->
+  <script>
+    "use strict";
+
+    function goToPage() {
+        window.location.href = "index.html"; 
+    }
+
+    function setupCanvas(canvasId, imageUrl, mapUrl) {
+      const canvas = document.getElementById(canvasId);
+      const gl = canvas.getContext("webgl");
+      if (!gl) {
+        console.error("No se pudo obtener el contexto WebGL.");
+        return;
+      }
+
+      let originalImage = { width: 1, height: 1 };
+      const originalTexture = twgl.createTexture(gl, {
+        src: imageUrl,
+        crossOrigin: "",
+      }, (err, texture, source) => {
+        if (err) {
+          console.error("Error al cargar la textura de la imagen original.");
+          return;
+        }
+        originalImage = source;
+      });
+
+      const mapTexture = twgl.createTexture(gl, {
+        src: mapUrl,
+        crossOrigin: "",
+      });
+
+      const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+      const bufferInfo = twgl.primitives.createXYQuadBufferInfo(gl);
+
+      const mouse = [0, 0];
+      document.addEventListener("mousemove", (event) => {
+        mouse[0] = (event.clientX / gl.canvas.clientWidth  * 2 - 1) * -0.003;
+        mouse[1] = (event.clientY / gl.canvas.clientHeight * 2 - 1) * -0.003;
+      }); 
+
+       // Manejar la orientación del dispositivo
+       window.addEventListener('deviceorientation', (event) => {
+        const beta = event.beta; // Inclinación hacia adelante y atrás
+        const gamma = event.gamma; // Inclinación hacia los lados
+        const xMovement = (gamma / 90) * -0.1; // Aumentado el multiplicador
+        const yMovement = (beta / 90) * 0.1; // Aumentado el multiplicador
+
+        mouse[0] = xMovement;
+        mouse[1] = yMovement;
+      });
+ 
+      const nMouse = [0, 0];
+      requestAnimationFrame(render);
+
+      function render() {
+        twgl.resizeCanvasToDisplaySize(gl.canvas);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.useProgram(programInfo.program);
+        twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+
+        const canvasAspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const imageAspect = originalImage.width / originalImage.height;
+
+        const mat = [
+          imageAspect / canvasAspect, 0, 0,
+          0, -1, 0,
+          0, 0, 1
+        ];
+
+        nMouse[0] += (mouse[0] - nMouse[0]) * 0.05;
+        nMouse[1] += (mouse[1] - nMouse[1]) * 0.05;
+
+        twgl.setUniforms(programInfo, {
+          u_matrix: mat,
+          u_originalImage: originalTexture,
+          u_mapImage: mapTexture,
+          u_mouse: nMouse,
+        });
+
+        twgl.drawBufferInfo(gl, bufferInfo);
+        requestAnimationFrame(render);
+      }
+    }
+
+     // Función para abrir el canvas en pantalla completa
+     function openFullscreen(canvas) {
+      if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+      } else if (canvas.webkitRequestFullscreen) { /* Safari */
+        canvas.webkitRequestFullscreen();
+      } else if (canvas.msRequestFullscreen) { /* IE11 */
+        canvas.msRequestFullscreen();
+      }
+      document.getElementById("exit-fullscreen").style.display = "block";
+    }
+
+    // Función para salir de pantalla completa
+    function closeFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+      }
+      document.getElementById("exit-fullscreen").style.display = "none";
+    }
+
+
+    // Llama a setupCanvas para ambos canvas con sus URLs correspondientes
+    
+    setupCanvas("canvas9", "https://enfermeriauja2024.github.io/enfermeria1/fotos/5/a1.jpg", "https://enfermeriauja2024.github.io/enfermeria1/fotos/5/a1-d.png");
+    setupCanvas("canvas10", "https://enfermeriauja2024.github.io/enfermeria1/fotos/5/b1.jpg", "https://enfermeriauja2024.github.io/enfermeria1/fotos/5/b1-d.png");
+  
+    setupCanvas("canvas11", "https://enfermeriauja2024.github.io/enfermeria1/fotos/6/a1.jpg", "https://enfermeriauja2024.github.io/enfermeria1/fotos/6/a1-d.png");
+    setupCanvas("canvas12", "https://enfermeriauja2024.github.io/enfermeria1/fotos/6/b1.jpg", "https://enfermeriauja2024.github.io/enfermeria1/fotos/6/b1-d.png");
+  
+      // Añade eventos de clic para abrir los canvas en pantalla completa
+    document.getElementById("canvas1").addEventListener("click", function() {
+      openFullscreen(this);
+    });
+    document.getElementById("canvas2").addEventListener("click", function() {
+      openFullscreen(this);
+    });
+
+    // Evento para el botón de salir de pantalla completa
+    document.getElementById("exit-fullscreen").addEventListener("click", closeFullscreen);
+  
+    
+  </script>
+
+</body>
+</html>
