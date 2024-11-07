@@ -20,6 +20,11 @@ body {
     align-items: center;
     padding: 20px;
 }
+ 
+canvas {
+      width: 90%;
+      height: 90%;
+    }
 
 h1 {
     text-align: center;
@@ -93,12 +98,12 @@ h1 {
       <div class="image-row">
           <div class="image-container">
               <!-- <img src="fotos/1/a1.jpg" alt="Antes" class="img"> -->
-              <canvas width="300" height="300" id="canvas1"></canvas>
+              <canvas id="canvas1"></canvas>
               <p class="label">Antes</p>
           </div>
           <div class="image-container">
               <!--   <img src="fotos/1/b1.jpg" alt="Después" class="img"> -->
-              <canvas width="300" height="300" id="canvas2"></canvas>
+              <canvas id="canvas2"></canvas>
               <p class="label">Después</p>
           </div>
       </div>
@@ -294,8 +299,8 @@ h1 {
           0, 0, 1
         ];
 
-        nMouse[0] += (mouse[0] - nMouse[0]) * 0.02;
-        nMouse[1] += (mouse[1] - nMouse[1]) * 0.02;
+        nMouse[0] += (mouse[0] - nMouse[0]) * 0.05;
+        nMouse[1] += (mouse[1] - nMouse[1]) * 0.05;
 
         twgl.setUniforms(programInfo, {
           u_matrix: mat,
