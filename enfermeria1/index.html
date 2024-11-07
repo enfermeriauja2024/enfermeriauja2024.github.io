@@ -324,6 +324,17 @@ canvas {
         mouse[1] = (event.clientY / gl.canvas.clientHeight * 2 - 1) * -0.003;
       }); 
 
+       // Manejar la orientación del dispositivo
+       window.addEventListener('deviceorientation', (event) => {
+        const beta = event.beta; // Inclinación hacia adelante y atrás
+        const gamma = event.gamma; // Inclinación hacia los lados
+        const xMovement = (gamma / 90) * -0.1; // Aumentado el multiplicador
+        const yMovement = (beta / 90) * 0.1; // Aumentado el multiplicador
+
+        mouse[0] = xMovement;
+        mouse[1] = yMovement;
+      });
+ 
       const nMouse = [0, 0];
       requestAnimationFrame(render);
 
